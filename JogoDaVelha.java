@@ -1,16 +1,38 @@
+
+import java.util.Scanner;
+
 public class JogoDaVelha {
+
+    Scanner scannner = new Scanner(System.in);
+
     protected static final int X = 1, O = -1;
     protected static final int VAZIO = 0;
-    protected int tabuleiro[][] = new int[3][3];
+    protected int tabuleiro[][];
     protected int jogador;
+    public int tamanho;
+
+    public void setTamanho(int tamanho) {
+        this.tamanho = tamanho;
+    }
+
+    public int getTamanho() {
+        return tamanho;
+    }
+
+    public int valor (int i , int j){
+       return tabuleiro[i][j];
+    }
 
     public JogoDaVelha() {
+        System.out.println("Informe o tamanho do tabuleiro");
+        this.setTamanho(scannner.nextInt());
+        this.tabuleiro = new int [tamanho][tamanho];
         limpaTabuleiro();
     }
 
     public void limpaTabuleiro() {
-        for(int i = 0;i<3;i++) {
-            for (int j=0; j<3; j++) {
+        for(int i = 0; i< tamanho;i++) {
+            for (int j=0; j<tamanho; j++) {
                 tabuleiro[i][j]=VAZIO;
             }
         }
@@ -18,7 +40,7 @@ public class JogoDaVelha {
     }
 
     public void poePeca(int i, int j) {
-        if (i<0||i>2||j<0||j>2){
+        if (i<0||i>tamanho||j<0||j>tamanho){
             throw new IllegalArgumentException("Posição Inválida");
         }
         if (tabuleiro[i][j]!=VAZIO) throw new IllegalArgumentException("Posição Ocupada");
@@ -26,13 +48,49 @@ public class JogoDaVelha {
         jogador = -jogador;
     }
 
+    public boolean eVencedor(int marca) {
+        for (int i = 0; i < tamanho; i++) {
+            int sLinha = 0;
+            int sColuna = 0;
+            for (int j = 0; j < tamanho; j++) {
+                sLinha += tabuleiro[i][j];
+                sColuna += tabuleiro[j][i];
+            }
+            if (sLinha == marca * tamanho || sColuna == marca * tamanho) {
+                return true;
+            }
+        }
+
+        int sDiagonalP = 0;
+        int sDiagonalS = 0;
+        for (int i = 0; i < tamanho; i++) {
+            for (int j = 0; j < tamanho; j++) {
+                if (i == j) {
+                    sDiagonalP += tabuleiro[i][j];
+                }
+                if (i + j == 2) {
+                    sDiagonalS += tabuleiro[i][j];
+                }
+            }
+        }
+
+        if (sDiagonalP == marca * tamanho || sDiagonalS == marca * tamanho) {
+            return true;
+        }
+
+        return false;
+    }
+
+
 
     public int vencedor() {
-        int resultado = 2;
-        // Implemente este método que deve retornar o vencedor ou 
-        // zero em caso de empate e 2 se o jogo não acabou.
-
-        return resultado;
+        if (eVencedor(X)){
+            return 1;
+        }else if (eVencedor(O)){
+            return -1;
+        }else{
+            return 0;
+        }
     }
 
     
@@ -42,8 +100,8 @@ public class JogoDaVelha {
          * nas posições corretas.
          */
         String retorno = "";
-        for (int i=0; i<3;i++){
-            for (int j=0; j<3; j++){
+        for (int i=0; i<tamanho;i++){
+            for (int j=0; j<tamanho; j++){
                 if(tabuleiro[i][j]==X) {
                     retorno += ("X");
                 } else if (tabuleiro[i][j]==O) {
@@ -51,13 +109,15 @@ public class JogoDaVelha {
                 } else {
                     retorno += (" ");
                 }
-                if (j<2){
+                if (j < tamanho - 1){
                     retorno += ("|");
                 }
             }
             //System.out.println();
-            if (i<2){
-                retorno += ("\n-----\n");
+            if (i< tamanho - 1){
+                retorno += ("\n");
+                retorno += ("-".repeat(tamanho * 2 -1));
+                retorno += ("\n");
             }
 
         }   
